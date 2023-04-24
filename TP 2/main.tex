@@ -1,0 +1,173 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{Analyse numérique TP2}
+\author{Thomas Barrais et Nabil Bargach}
+\date{March 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Exercice 2 : Problème aux limites} 
+
+\subsection{Question 1}
+Pour montrer que $u = \sin(2\pi x)$ est un vecteur propre de l'opérateur $\hat{A} = -\frac{d^2}{dx^2} + 2$, nous devons vérifier si l'équation suivante est satisfaite:
+
+$$\hat{A}u = \lambda u$$
+
+où $\lambda$ est la valeur propre correspondante.
+
+En appliquant l'opérateur $\hat{A}$ sur $u = \sin(2\pi x)$, nous obtenons:
+
+$$\hat{A}u = -\frac{d^2}{dx^2}(\sin(2\pi x)) + 2\sin(2\pi x)$$
+
+En utilisant la formule de dérivation de la fonction sinusoïdale, nous avons:
+
+$$\hat{A}u = -(2\pi)^2\sin(2\pi x) + 2\sin(2\pi x) = (2-4\pi^2)\sin(2\pi x)$$
+
+Ainsi, si nous posons $\lambda = 2 - 4\pi^2$, nous avons:
+
+$$\hat{A}u = \lambda u$$
+
+Ce qui montre que $u = \sin(2\pi x)$ est bien un vecteur propre de $\hat{A}$.
+
+Maintenant, pour déduire une solution exacte du problème aux limites précédent, nous devons résoudre l'équation différentielle:
+
+$$-\frac{d^2u}{dx^2} + 2u = \lambda u$$
+
+où $\lambda = 2 - 4\pi^2$ et les conditions aux limites sont définies par:
+
+$$u(0) = u(1) = 0$$
+
+Pour résoudre cette équation, nous posons $u(x) = A\sin(\sqrt{\lambda} x) + B\cos(\sqrt{\lambda} x)$, où $A$ et $B$ sont des constantes à déterminer en utilisant les conditions aux limites.
+
+La première condition aux limites nous donne:
+
+$$u(0) = 0 = A\sin(0) + B\cos(0) = B$$
+
+Ainsi, nous avons $B = 0$ et notre solution devient:
+
+$$u(x) = A\sin(\sqrt{\lambda} x)$$
+
+Ainsi, la solution exacte au problème aux limites est donnée par:
+
+$$u(x) = \frac{\sin(2\pi x)}{\lambda}$$
+
+\subsection{Question 2}
+Considérons le problème suivant:
+
+$$-\frac{d^2u}{dx^2} + 2u = f(x)$$
+
+avec les conditions aux limites:
+
+$$u(0) = u(1) = 0$$
+
+Nous allons utiliser la méthode aux différences finies pour discrétiser l'équation différentielle sur une grille de points équidistants $x_i = i\Delta x$, où $\Delta x = \frac{1}{N+1}$ est l'espacement de la grille et $N+1$ est le nombre de points de
+la grille. \newline
+\newline
+Nous approchons la deuxième dérivée de $u$ en utilisant la différence centrée:
+La méthode aux différences finies centrées d'ordre 2 pour la dérivée seconde est
+obtenue à partir des formules de Taylor en développant $u(x_i + \Delta x)$ et
+$u(x_i - \Delta x)$ autour de $u(x_i)$:
+
+$$u(x_i+\Delta x) = u(x_i) + \Delta x\frac{\partial u}{\partial x}(x_i) + \frac{\Delta x^2}{2}\frac{\partial^2 u}{\partial x^2}(x_i) + \frac{\Delta x^3}{6}\frac{\partial^3 u}{\partial x^3} + \frac{\Delta x^4}{24}\frac{\partial^4 u}{\partial x^4}$$
+
+$$u(x_i-\Delta x) = u(x_i) - \Delta x\frac{\partial u}{\partial x}(x_i) + \frac{\Delta x^2}{2}\frac{\partial^2 u}{\partial x^2}(x_i) - \frac{\Delta x^3}{6}\frac{\partial^3 u}{\partial x^3} + \frac{\Delta x^4}{24}\frac{\partial^4 u}{\partial x^4}$$
+
+En ajoutant ces deux expressions et en résolvant pour $\frac{\partial^2 u}{\partial x^2}(x_i)$, on obtient la formule de différences finies centrées d'ordre 2 pour la dérivée seconde:
+
+$$\frac{\partial^2 u}{\partial x^2}(x_i) = \frac{u(x_i+\Delta x) - 2u(x_i) + u(x_i-\Delta x)}{\Delta x^2} + \frac{\Delta x^2}{12}\frac{\partial^4 u}{\partial x^4}$$
+
+$$\frac{d^2u}{dx^2} \approx \frac{u_{i+1}-2u_i+u_{i-1}}{(\Delta x)^2}$$
+
+où $u_i$ est la valeur approchée de $u(x_i)$ sur la grille. En utilisant cette approximation, nous pouvons discrétiser l'équation différentielle:
+
+$$-\frac{u_{i+1}-2u_i+u_{i-1}}{(\Delta x)^2} + 2u_i = f_i$$
+
+où $f_i = f(x_i)$ est la valeur approchée de la fonction $f$ sur la grille. On fixe u(0) = u(N+1) = 0 car $u_{i-1}$ ou $u_{i+1}$ n'existent pas pour ces points.
+
+\subsection{Question 3}
+
+Cette expression peut être écrite sous forme matricielle:
+
+$$AU = b$$
+
+où $U$ est un vecteur colonne contenant les valeurs de $u$ sur les points de la grille, $b$ est un vecteur colonne contenant les valeurs de $f$ sur les points de la grille, et la matrice $A$ est donnée par:
+
+\begin{enumerate}
+    \item Noeud 1 : $u_{0}=0$
+    \item Noeud 2 : $\frac{u_3 - 2u_2 + u_1}{h^2} + 2u_2 = f_2$
+    \item ...
+    \item Noeud N : $\frac{u_{N+1} - 2u_N + u_{N-1}}{h^2}=f_N$
+    \item Noeud N+1 : $u_{N+1}=0$
+\end{enumerate}
+
+Le second membre de ces expressions forme la matrice colonne b. Les lignes de la  matrice A sont formées des coefficients devant les $u_i$.
+
+\section{Exercice 3 : Equation de la chaleur}
+\subsection{Question 1}
+
+Pour montrer que le schéma précédent s'écrit vectoriellement, nous allons utiliser la notation matricielle pour représenter les inconnues $u_{j,i}$.
+
+Soit $U^j = (u_{1}^j, u_{2}^j, \cdots, u_{n-1}^j, u_{n}^j)$ un vecteur colonne de taille $n-1$. 
+\newline On pose également $V^j = (\alpha^j, 0, \cdots, 0, \beta^j$ un vecteur colonne de taille $n-1$.
+\newline
+\newline
+Equation du schéma explicite :
+
+$$\frac{u_i^{j+1} - u_i^{j}}{\Delta t} - \frac{u_{i+1}^j - 2u_i^j + u_{i-1}^j}{h^2} = 0$$
+
+Ainsi, on peut écrire ces équations sous forme matricielle :
+
+$$\frac{U^{j+1} - U^{j}}{\Delta t} + A_h U^j = \frac{1}{h^2}V^j$$
+\newline
+\newline
+
+Avec $A_h$ de la forme :
+\begin{itemize}
+    \item $\frac{2}{h^2}$ sur la diagonale 
+    \item $-\frac{1}{h^2}$ sur les diagonales supérieur et inférieur
+\end{itemize}
+
+\subsection{Question 2}
+En modifiant l'équation précédante, avec $A_h = \frac{A}{h^2}$ :
+
+$$U^{j+1} - U^j + \Delta t A_h U^j = \frac{\Delta t}{h^2}V^j$$
+
+Ce qui nous donne :
+
+$$ U^{j+1} + [-I_n + \frac{\Delta t}{h^2}A]U^j = \frac{\Delta t}{h^2}V^j$$
+
+Avec $I_n$ la matrice identité d'ordre n
+\newline
+
+D'après les données de l'énoncé on obtient une matrice A 3x3, h = 0.25 et $\Delta t = 0.001$
+\newline
+\newline
+On sait que : $U^0 = \frac{f(x_1)f(x_2)}{f(x_3)}$, or $\forall i f(x_i) = 50$, d'où:
+
+$$(U^0)^T = (50 \ 50 \ 50)$$
+
+De plus, $u_0^j = \alpha$ et $u_2^j = \beta$, on obtient donc:
+
+$$(V^j)^T = (\alpha \ 0 \ \beta)$$
+
+La matrice A s'obtient facilement avec les informations sur $A_h$ données à la question 1.
+
+\subsection{Question 5}
+
+En utilisant comme approximation de la dérivée simple : $\frac{\partial u}{\partial t}(x_i, t_j) \simeq \frac{u_i^j-u_i^{j-1}}{\Delta t}$, on obtient comme schéma explicite du problème :
+
+$$U^j - U^{j-1} + \Delta t A_h U^j = \frac{\Delta t}{h^2}V^j$$
+
+Ce qui nous donne :
+
+$$U^{j-1} = [\frac{\Delta t}{h^2}A + I_n]U^j - \frac{\Delta t}{h^2}V^j$$
+
+\subsection{Question 6}
+
+La formulation explicite permet de modéliser plus finement les phénomènes mais est plus gourmande en ressources. La méthode implicite quant à elle est plus stable
+
+
+\end{document}
