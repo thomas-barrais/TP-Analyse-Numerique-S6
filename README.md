@@ -6,3 +6,4 @@ Modélisation du mouvement d'une balle et du système Soleil-Terre-Lune avec Tki
 
 TP 2 :
 
+Equation de la chaleur et problème aux limites
